@@ -1,5 +1,6 @@
 import React from 'react';
 import { BookCopy, Github, User, Star, GitFork, Sun, Moon } from 'lucide-react';
+import { useGitHubStats } from '../../hooks/useGitHubStats';
 
 interface HeaderProps {
   isDarkMode: boolean;
@@ -7,11 +8,8 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleTheme }) => {
-  const githubRepo = {
-    stars: 1234,
-    forks: 567,
-    url: 'https://github.com/ddahan/ui-libs'
-  };
+  const { stars, forks, loading } = useGitHubStats('GoodCode-Society', 'ui-library-explorer');
+  const githubUrl = 'https://github.com/GoodCode-Society/ui-library-explorer';
 
   return (
     <header className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-2xl shadow-2xl p-1 border border-white/10">
@@ -30,7 +28,7 @@ export const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleTheme }) => {
         
         <div className="flex items-center space-x-2">
           <a 
-            href={githubRepo.url} 
+            href={githubUrl} 
             target="_blank" 
             rel="noopener noreferrer" 
             className="hidden md:flex items-center space-x-2 text-blue-100 hover:text-white hover:scale-105 transition-all duration-300 bg-white/10 hover:bg-white/20 px-4 py-2.5 rounded-xl backdrop-blur-sm border border-white/10 shadow-lg"
@@ -39,11 +37,11 @@ export const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleTheme }) => {
             <div className="flex space-x-4 text-sm font-medium">
               <span className="flex items-center">
                 <Star size={14} className="mr-1.5" />
-                {githubRepo.stars}
+                {loading ? '...' : stars.toLocaleString()}
               </span>
               <span className="flex items-center">
                 <GitFork size={14} className="mr-1.5" />
-                {githubRepo.forks}
+                {loading ? '...' : forks.toLocaleString()}
               </span>
             </div>
           </a>

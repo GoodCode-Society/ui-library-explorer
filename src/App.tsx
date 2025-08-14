@@ -108,7 +108,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-200">
       {/* Header - Full Width */}
-      <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
+      <div className="w-full px-0 sm:px-0 lg:px-1 py-2">
         <Header isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
       </div>
       

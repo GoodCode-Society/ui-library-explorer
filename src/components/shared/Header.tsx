@@ -12,7 +12,7 @@ export const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleTheme }) => {
   const githubUrl = 'https://github.com/GoodCode-Society/ui-library-explorer';
 
   return (
-    <header className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-2xl shadow-2xl p-1 border border-white/10">
+    <header className="p-1 md:p-2 lg:p-3  bg-gray-900 text-white rounded-b-3xl shadow-xl">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <div className="p-3 bg-white/15 rounded-xl backdrop-blur-sm shadow-lg">

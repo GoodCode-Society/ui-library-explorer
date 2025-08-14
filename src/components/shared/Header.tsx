@@ -47,7 +47,7 @@ export const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleTheme }) => {
           </a>
           
           <a 
-            href="https://github.com/codingdud/portfolio" 
+            href="https://codingdud.github.io/portfolio/" 
             target="_blank" 
             rel="noopener noreferrer" 
             className="text-blue-100 hover:text-white hover:scale-110 transition-all duration-300 p-2.5 bg-white/10 hover:bg-white/20 rounded-xl backdrop-blur-sm border border-white/10 shadow-lg"

@@ -1,11 +1,12 @@
-import React from 'react';
-import { Star, Download, ExternalLink, Github, Heart, Eye, ScanEye , Calendar } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { Star, Download, ExternalLink, Github, Heart, Eye, ScanEye , Calendar, RefreshCw } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/Tooltip';
 import { Library } from '../../types';
 import { formatNumber } from '../../utils/filterUtils';
+import { useRepoData } from '../../hooks/useRepoData';
 
 interface LibraryCardProps {
   library: Library;
@@ -24,6 +25,26 @@ export const LibraryCard: React.FC<LibraryCardProps> = ({
   isInComparison,
   onView
 }) => {
+  // Extract GitHub owner and repo from URL
+  const gitHubMatch = library.github?.match(/github\.com\/([^/]+)\/([^/]+)$/) || [];
+  const gitHubOwner = gitHubMatch[1];
+  const gitHubRepo = gitHubMatch[2];
+
+  // Fetch real-time GitHub data
+  const { data: repoData, loading, error, refetch, isStale } = useRepoData(
+    gitHubOwner,
+    gitHubRepo,
+    true // enablePolling
+  );
+
+  // Merge static library data with real-time GitHub data
+  const displayData = useMemo(() => ({
+    stars: repoData?.stars ?? library.stars,
+    downloads: library.downloads, // Note: downloads from npm would need separate npm API
+    lastUpdated: repoData?.lastUpdated ?? library.lastUpdated,
+    description: repoData?.description || library.description,
+  }), [repoData, library]);
+
   const formatDate = (dateString: string) =>
     new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -105,25 +126,64 @@ export const LibraryCard: React.FC<LibraryCardProps> = ({
 
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center space-x-4">
-            <div className="flex items-center text-gray-600 dark:text-gray-400">
-              <Star size={14} className="mr-1 text-yellow-500" />
-              <span className="font-medium">{formatNumber(library.stars)}</span>
+            <div className="flex items-center text-gray-600 dark:text-gray-400 relative group">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center cursor-help">
+                      <Star size={14} className="mr-1 text-yellow-500" />
+                      {loading && !repoData ? (
+                        <span className="animate-pulse">...</span>
+                      ) : (
+                        <span className="font-medium">{formatNumber(displayData.stars)}</span>
+                      )}
+                      {isStale && <span className="ml-1 text-orange-500">⚠</span>}
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {isStale && 'Data is stale (>24h old)'}
+                    {error && `Error: ${error}`}
+                    {!error && !isStale && 'Live data from GitHub'}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             <div className="flex items-center text-gray-500">
               <Download size={12} className="mr-1" />
-              <span>{formatNumber(library.downloads)}</span>
+              <span>{formatNumber(displayData.downloads)}</span>
             </div>
           </div>
-          <div className="flex items-center text-xs text-gray-500">
-            <Calendar size={12} className="mr-1" />
-            {formatDate(library.lastUpdated)}
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center text-xs text-gray-500">
+              <Calendar size={12} className="mr-1" />
+              {formatDate(displayData.lastUpdated)}
+            </div>
+            {gitHubOwner && gitHubRepo && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => refetch()}
+                      disabled={loading}
+                      className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      aria-label="Refresh data"
+                    >
+                      <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Refresh live data</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </div>
         </div>
       </CardHeader>
 
       <CardContent className="flex-1 py-3">
         <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed">
-          {library.description}
+          {displayData.description}
         </p>
         <div className="flex flex-wrap gap-1 mt-3">
           {library.isTailwind && (

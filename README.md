@@ -11,6 +11,7 @@ A modern, responsive web application for discovering and comparing React UI comp
 - **🌙 Dark Mode**: Toggle between light and dark themes
 - **📱 Responsive**: Works seamlessly on all devices
 - **♿ Accessible**: Built with accessibility in mind
+- **🔄 Real-Time Data**: Live GitHub statistics with automatic polling and intelligent caching
 
 ## 🚀 Quick Start
 
@@ -74,6 +75,19 @@ src/
 ### Managing Favorites
 - Click the heart icon to save libraries
 - Access favorites through filters
+
+## 🔄 Real-Time Data Updates
+
+This application features a real-time data system that automatically fetches live statistics from GitHub:
+
+- **Live Statistics**: Star counts and forks update automatically from GitHub API
+- **Intelligent Caching**: Data is cached for 15 minutes to minimize API calls
+- **Automatic Polling**: Updates are fetched every 5 minutes when the app is active
+- **Manual Refresh**: Click the refresh icon on any library card to fetch the latest data immediately
+- **Error Handling**: If GitHub API is unavailable, cached or fallback data is displayed
+- **Rate Limit Aware**: The service monitors GitHub API rate limits and adapts accordingly
+
+For detailed information about the real-time data system, see [REAL_TIME_DATA.md](./REAL_TIME_DATA.md).
 
 ## 🤝 Contributing
 
